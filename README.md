@@ -1,1 +1,3 @@
-# cc_creator
+###################################
+
+Some tutorials for game development.
