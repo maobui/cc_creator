@@ -22,7 +22,8 @@ export default class Star extends cc.Component {
         // When the stars are being collected, invoke the interface in the Game script to generate a new star
         this.game.spawnNewStar();
         // // 
-        this.game.gainScore();
+        var pos = this.node.getPosition();
+        this.game.gainScore(pos);
         // then destroy the current star's node
         this.node.destroy();
     }

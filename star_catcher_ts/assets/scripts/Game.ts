@@ -1,5 +1,6 @@
 import Star from "./Star"
 import Player from "./Player"
+import ScoreFX from "./ScoreFX";
 
 const {ccclass, property} = cc._decorator;
 
@@ -8,6 +9,9 @@ export default class Game extends cc.Component {
 
     @property(cc.Prefab)
     starPrefab: cc.Prefab = null;
+
+    @property(cc.Prefab)
+    scoreFXPrefab: cc.Prefab = null;
 
     // the random scale of disappearing time for stars
     @property(cc.Float)
@@ -56,8 +60,10 @@ export default class Game extends cc.Component {
         //this.spawnNewStar();
         // initialize scoring
         this.score = 0;
-        //
+        // hide label game_over.
         this.gameOverNode.active = false;
+        // first : show menu : must press play button -> game start.
+        this.isGamePaused = true;
     }
 
     spawnNewStar() {
@@ -85,9 +91,15 @@ export default class Game extends cc.Component {
         return cc.p(randX, randY);
     }
 
-    gainScore () {
+    gainScore (pos) {
         this.score ++;
         this.scoreDisplay.string = "Score : " + this.score.toString();
+
+        var fx = this.spawnScoreFX();
+        this.node.addChild(fx.node);
+        fx.node.setPosition(pos);
+        fx.play();
+
         // play the scoring sound effect
         cc.audioEngine.playEffect(this.scoreAudio, false);
     }
@@ -122,9 +134,25 @@ export default class Game extends cc.Component {
     onStartGame () {
         this.resetScore();
         this.gameOverNode.active = false;
-        this.player.startMoveAt(cc.p(0, this.groundY));
+        this.player.startMoveAt(cc.p(0, -90));
         this.spawnNewStar();
         this.buttonPlay.setPositionX(3000);
         this.isGamePaused = false;
+    }
+
+    spawnScoreFX () {
+        var fx;
+        // if (this.scorePool.size() > 0) {
+        //     fx = this.scorePool.get();
+        //     return fx.getComponent(ScoreFX);
+        // } else {
+            fx = cc.instantiate(this.scoreFXPrefab).getComponent(ScoreFX);
+            fx.init(this);
+            return fx;
+        // }
+    }
+
+    despawnScoreFX (scoreFX) {
+        // this.scorePool.put(scoreFX);
     }
 }
